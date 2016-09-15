@@ -82,9 +82,11 @@ int write_p6(){
     fprintf(stderr, "Error: Improper header filetype in buffer.\n", 007);
     return 0;
   }
+  fprintf(outputfp, "%c%c", a, '6');
   a = data[i++];
   fprintf(outputfp, "%c", a);
   line = 2;
+  a = data[i++];
 
   while(line < 5){
     fprintf(outputfp, "%c", a);
@@ -103,6 +105,7 @@ int write_p6(){
 
   //printf("\nBuffer:\n%s-------------\n", data);
 
+/*
   for(i=0; !feof(inputfp) ; i++){
     a = fgetc(inputfp);
     //printf("%c", a);
@@ -112,6 +115,7 @@ int write_p6(){
 
   data[i+endOfHeader-1] = '\0';
   //printf("\nBuffer:\n%s-------------\n", data);
+*/
   return 1;
 
 };
