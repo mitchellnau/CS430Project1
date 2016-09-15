@@ -91,7 +91,7 @@ int read_p3(){
   //printf("%s\n", header);
 
   image = malloc(sizeof(Pixel)*width*height);
-  for(i=0; i <= width*height ; i++){
+  for(i=0; i < width*height ; i++){
     //a = fgetc(inputfp);
     Pixel temp;
 
@@ -104,14 +104,13 @@ int read_p3(){
     //printf("%3d: %d %d %d\n", i, temp.r, temp.g, temp.b);
 
     image[i*sizeof(Pixel)] = temp;
-
   }
 
-  /*for(i = 0; i <= width*height; i++){
+  for(i = 0; i < width*height; i++){
     printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
                                image[i*sizeof(Pixel)].g,
                                image[i*sizeof(Pixel)].b);
-  }*/
+  }
   return 1;
 }
 
@@ -120,10 +119,10 @@ int write_p3(){
   header[1] = '3';
   fprintf(outputfp, "%s", header);
   int i;
-  for(i = 0; i <= width*height; i++){
-    printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
-                               image[i*sizeof(Pixel)].g,
-                               image[i*sizeof(Pixel)].b);
+  for(i = 0; i < width*height; i++){
+    fprintf(outputfp, "%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
+                                 image[i*sizeof(Pixel)].g,
+                                 image[i*sizeof(Pixel)].b);
   }
   return 1;
 };
@@ -157,28 +156,37 @@ int main(int argc, char* argv[]){
     if (argv[1][0] == '3' || argv[1][0] == '6'){
       if(argv[1][0] == '3'){
         inputfp = fopen(argv[2], "r");
-        if (inputfp == 0)
+        if (inputfp == 0){
           fprintf(stderr, "Error: Input file \"%s\" could not be opened.\n", argv[2], 003);
-        outputfp = fopen(argv[3], "wb");
-        if (outputfp == 0)
-            fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
+          exit(1);
+        }
+        outputfp = fopen(argv[3], "w");
+        if (outputfp == 0){
+          fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
+          exit(1);
+        }
 
                 read_p3();
                 write_p6();
       }
       else{
         inputfp = fopen(argv[2], "rb");
-        if (inputfp == 0)
+        if (inputfp == 0){
           fprintf(stderr, "Error: Input file \"%s\" could not be opened.\n", argv[2], 003);
+          exit(1);
+        }
         outputfp = fopen(argv[3], "w");
-        if (outputfp == 0)
-            fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
+        if (outputfp == 0){
+          fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
+          exit(1);
+        }
         read_p6();
         write_p3();
       }
     }
     else {
       fprintf(stderr, "Error: Input number \"%s\" is not 3 or 6.\n", argv[1], 005);
+      exit(1);
     }
 
     fclose(outputfp);
