@@ -12,9 +12,13 @@ typedef struct Pixel {
 
 FILE* inputfp;
 FILE* outputfp;
-char header[50];
+char header[64];
 Pixel* image;
 int width, height, maxcv;
+
+int write_p3();
+int write_p6();
+int read_p6();
 
 int read_p3(){
   //printf("Fd: %d\n", inputfp);
@@ -87,7 +91,7 @@ int read_p3(){
   //printf("%s\n", header);
 
   image = malloc(sizeof(Pixel)*width*height);
-  for(i=0; !feof(inputfp) ; i++){
+  for(i=0; i <= width*height ; i++){
     //a = fgetc(inputfp);
     Pixel temp;
 
@@ -102,18 +106,26 @@ int read_p3(){
     image[i*sizeof(Pixel)] = temp;
 
   }
-  /*
-  for(i = 0; i <= width*height; i+= 3){
+
+  /*for(i = 0; i <= width*height; i++){
     printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
                                image[i*sizeof(Pixel)].g,
                                image[i*sizeof(Pixel)].b);
   }*/
-
   return 1;
 }
 
 
 int write_p3(){
+  header[1] = '3';
+  fprintf(outputfp, "%s", header);
+  int i;
+  for(i = 0; i <= width*height; i++){
+    printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
+                               image[i*sizeof(Pixel)].g,
+                               image[i*sizeof(Pixel)].b);
+  }
+  return 1;
 };
 
 int read_p6(){
@@ -142,35 +154,36 @@ int main(int argc, char* argv[]){
     fprintf(stderr, "Error: Too many parameters.\nProper input: input_filename output_filename\n\n", 002);
 
   if(argc == 4){
-    inputfp = fopen(argv[2], "r");
-    outputfp = fopen(argv[3], "w");
-    if (inputfp == 0)
-      fprintf(stderr, "Error: Input file \"%s\" could not be opened.\n", argv[2], 003);
-    if (outputfp == 0)
-      fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
+    if (argv[1][0] == '3' || argv[1][0] == '6'){
+      if(argv[1][0] == '3'){
+        inputfp = fopen(argv[2], "r");
+        if (inputfp == 0)
+          fprintf(stderr, "Error: Input file \"%s\" could not be opened.\n", argv[2], 003);
+        outputfp = fopen(argv[3], "wb");
+        if (outputfp == 0)
+            fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
 
-    else{
-      if (argv[1][0] == '3' || argv[1][0] == '6'){
-            if(argv[1][0] == '3'){
                 read_p3();
                 write_p6();
-            }
-            else{
-                read_p6();
-                write_p3();
-            }
       }
-      else {
-        fprintf(stderr, "Error: Input number \"%s\" is not 3 or 6.\n", argv[1], 005);
+      else{
+        inputfp = fopen(argv[2], "rb");
+        if (inputfp == 0)
+          fprintf(stderr, "Error: Input file \"%s\" could not be opened.\n", argv[2], 003);
+        outputfp = fopen(argv[3], "w");
+        if (outputfp == 0)
+            fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
+        read_p6();
+        write_p3();
       }
-    //printf("\nBuffer:\n%s---okay---\n", read_p3());
-
-    //fprintf(outputfp, "%s", read_p3());
+    }
+    else {
+      fprintf(stderr, "Error: Input number \"%s\" is not 3 or 6.\n", argv[1], 005);
+    }
 
     fclose(outputfp);
     fclose(inputfp);
     }
-  }
   printf("closing...");
   return(0);
 };
