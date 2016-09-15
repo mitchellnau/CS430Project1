@@ -37,23 +37,23 @@ void read_p3(){
     if (a == '\n')
       line++;
   }
-  data[i] = a;
+  data[i] = '\n';
 
-  endOfHeader = i;
-
+  endOfHeader = i+1;
 
 
   printf("\nBuffer:\n%s-------------\n", data);
+
+
   for(i=0; !feof(inputfp) ; i++){
     a = fgetc(inputfp);
-    printf("%c", a);
-//    x = atoi(str);
-//    if(x > 255){
-//      fprintf(stderr, "Error: Color value exceeds maximum specified in header.\n", 006);
-//      break;
-//    }
-//    printf("%5dth nmbr: %d\n", i, x);
+    //printf("%c", a);
+    if(a != EOF)
+      data[i+endOfHeader] = a;
   }
+
+
+  printf("\nBuffer:\n%s-------------\n", data);
 
 }
 
