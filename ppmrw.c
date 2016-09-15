@@ -10,9 +10,9 @@ FILE* outputfp;
 
 void read_p3(){
   printf("Args: %d\n", inputfp);
-  char* data;
   char* str;
-  int i;
+  char* data;
+  int i, line, endOfHeader, x;
   char a, b;
 
 
@@ -20,31 +20,40 @@ void read_p3(){
   b = fgetc(inputfp);
   data[0] = a;
   data[1] = b;
-  printf("Header:\n%c%c", a, b);
-  //printf("\nBuffer:\n%s\n", data);
   if(a != 'P' || b !='3'){
     fprintf(stderr, "Error: Improper header filetype.\n", 005);
   }
   a = fgetc(inputfp);
-  //printf("\nBuffer:\n%s\n", data);
-  printf("%c", a); //newline
-  printf("%s", fgets(data, 100, inputfp));
-  printf("%s", fgets(data, 100, inputfp));
-  printf("%s", fgets(data, 100, inputfp));
+  data[2] = a;
+  i = 3;
+  line = 2;
+  a = fgetc(inputfp);
 
-  int x;
-
-  for(i=0; !feof(inputfp) ; i++){
-    fgets(str, 50, inputfp);
-    x = atoi(str);
-    if(x > 255){
-      fprintf(stderr, "Error: Color value exceeds maximum specified in header.\n", 006);
-      break;
-    }
-    printf("%5dth nmbr: %d\n", i, x);
+  while(line < 5){
+    data[i] = a;
+    a = fgetc(inputfp);
+    //printf("%c", a);
+    i++;
+    if (a == '\n')
+      line++;
   }
+  data[i] = a;
 
-  printf("%s", data);
+  endOfHeader = i;
+
+
+
+  printf("\nBuffer:\n%s-------------\n", data);
+  for(i=0; !feof(inputfp) ; i++){
+    a = fgetc(inputfp);
+    printf("%c", a);
+//    x = atoi(str);
+//    if(x > 255){
+//      fprintf(stderr, "Error: Color value exceeds maximum specified in header.\n", 006);
+//      break;
+//    }
+//    printf("%5dth nmbr: %d\n", i, x);
+  }
 
 }
 
