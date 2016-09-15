@@ -22,6 +22,7 @@ int read_p3(){
   data[1] = b;
   if(a != 'P' || b !='3'){
     fprintf(stderr, "Error: Improper header filetype.\n", 006);
+    return 0;
   }
   a = fgetc(inputfp);
   data[2] = a;
@@ -61,12 +62,58 @@ int read_p3(){
 }
 
 
-void write_p3(){
+int write_p3(){
 };
 
-void read_p6(){
+int read_p6(){
 };
-void write_p6(){
+
+int write_p6(){
+  int i, line, endOfHeader, x;
+  char a, b;
+  char* str;
+
+  i = 0;
+
+  a = data[i++];
+  b = data[i++];
+  printf("%c %c", a, b);
+  if(a != 'P' || b !='3'){
+    fprintf(stderr, "Error: Improper header filetype in buffer.\n", 007);
+    return 0;
+  }
+  a = data[i++];
+  fprintf(outputfp, "%c", a);
+  line = 2;
+
+  while(line < 5){
+    fprintf(outputfp, "%c", a);
+    a = data[i];
+    printf("%c", a);
+    i++;
+    if (a == '\n')
+      line++;
+  }
+  data[i] = '\n';
+  i++;
+  data[i] = '\n';
+
+  endOfHeader = i+1;
+
+
+  //printf("\nBuffer:\n%s-------------\n", data);
+
+  for(i=0; !feof(inputfp) ; i++){
+    a = fgetc(inputfp);
+    //printf("%c", a);
+    if(a != EOF)
+      data[i+endOfHeader-1] = a;
+  }
+
+  data[i+endOfHeader-1] = '\0';
+  //printf("\nBuffer:\n%s-------------\n", data);
+  return 1;
+
 };
 
 
