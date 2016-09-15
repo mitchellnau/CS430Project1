@@ -3,60 +3,111 @@
 
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
+typedef struct Pixel {
+  unsigned char r, g, b;
+} Pixel;
 
 
 FILE* inputfp;
 FILE* outputfp;
-char data[20000];
+char header[50];
+Pixel* image;
+int width, height, maxcv;
 
 int read_p3(){
   //printf("Fd: %d\n", inputfp);
   int i, line, endOfHeader, x;
   char a, b;
-  char* str;
-
+  char number[4];
+  char widthB[32], heightB[32], maxcvB[32];
+  char comment[64];
 
   a = fgetc(inputfp);
   b = fgetc(inputfp);
-  data[0] = a;
-  data[1] = b;
+  header[0] = a;
+  header[1] = b;
   if(a != 'P' || b !='3'){
     fprintf(stderr, "Error: Improper header filetype.\n", 006);
     return 0;
   }
-  a = fgetc(inputfp);
-  data[2] = a;
-  i = 3;
-  line = 2;
-  a = fgetc(inputfp);
 
-  while(line < 5){
-    data[i] = a;
+  a = fgetc(inputfp);
+  header[2] = a;
+
+  a = fgetc(inputfp);
+  if(a == '#'){
+    while(a != '\n'){
+        a = fgetc(inputfp);
+    }
+  }
+
+  a = fgetc(inputfp);
+  i = 0;
+  while(a != ' '){
+    widthB[i] = a;
     a = fgetc(inputfp);
-    //printf("%c", a);
     i++;
-    if (a == '\n')
-      line++;
   }
-  data[i] = '\n';
-  i++;
-  data[i] = '\n';
-
-  endOfHeader = i+1;
-
-
-  //printf("\nBuffer:\n%s-------------\n", data);
+  width = atoi(widthB);
+  widthB[i] = a;
+  widthB[i+1] = '\0';
+  //printf("width: %d\n", width);
 
 
-  for(i=0; !feof(inputfp) ; i++){
+  a = fgetc(inputfp);
+  i = 0;
+  while(a != '\n'){
+    heightB[i] = a;
     a = fgetc(inputfp);
-    //printf("%c", a);
-    if(a != EOF)
-      data[i+endOfHeader-1] = a;
+    i++;
   }
+  height = atoi(heightB);
+  heightB[i] = a;
+  heightB[i+1] = '\0';
+  //printf("height: %d\n", height);
 
-  data[i+endOfHeader-1] = '\0';
-  //printf("\nBuffer:\n%s-------------\n", data);
+  a = fgetc(inputfp);
+  i = 0;
+  while(a != '\n'){
+    maxcvB[i] = a;
+    a = fgetc(inputfp);
+    i++;
+  }
+  maxcv = atoi(maxcvB);
+  maxcvB[i] = a;
+  maxcvB[i+1] = '\0';
+  //printf("maxcv: %d\n", maxcv);
+
+  strcat(header, widthB);
+  strcat(header, heightB);
+  strcat(header, maxcvB);
+
+  //printf("%s\n", header);
+
+  image = malloc(sizeof(Pixel)*width*height);
+  for(i=0; !feof(inputfp) ; i++){
+    //a = fgetc(inputfp);
+    Pixel temp;
+
+    fgets(number, 5, inputfp);
+    temp.r = atoi(number);
+    fgets(number, 5, inputfp);
+    temp.g = atoi(number);
+    fgets(number, 5, inputfp);
+    temp.b = atoi(number);
+    //printf("%3d: %d %d %d\n", i, temp.r, temp.g, temp.b);
+
+    image[i*sizeof(Pixel)] = temp;
+
+  }
+  /*
+  for(i = 0; i <= width*height; i+= 3){
+    printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
+                               image[i*sizeof(Pixel)].g,
+                               image[i*sizeof(Pixel)].b);
+  }*/
 
   return 1;
 }
@@ -69,53 +120,7 @@ int read_p6(){
 };
 
 int write_p6(){
-  int i, line, endOfHeader, x;
-  char a, b;
-  char* str;
 
-  i = 0;
-
-  a = data[i++];
-  b = data[i++];
-  printf("%c %c", a, b);
-  if(a != 'P' || b !='3'){
-    fprintf(stderr, "Error: Improper header filetype in buffer.\n", 007);
-    return 0;
-  }
-  fprintf(outputfp, "%c%c", a, '6');
-  a = data[i++];
-  fprintf(outputfp, "%c", a);
-  line = 2;
-  a = data[i++];
-
-  while(line < 5){
-    fprintf(outputfp, "%c", a);
-    a = data[i];
-    printf("%c", a);
-    i++;
-    if (a == '\n')
-      line++;
-  }
-  data[i] = '\n';
-  i++;
-  data[i] = '\n';
-
-  endOfHeader = i+1;
-
-
-  //printf("\nBuffer:\n%s-------------\n", data);
-
-/*
-  for(i=0; !feof(inputfp) ; i++){
-    a = fgetc(inputfp);
-    //printf("%c", a);
-    if(a != EOF)
-      data[i+endOfHeader-1] = a;
-  }
-
-  data[i+endOfHeader-1] = '\0';
-  //printf("\nBuffer:\n%s-------------\n", data);
-*/
   return 1;
 
 };
