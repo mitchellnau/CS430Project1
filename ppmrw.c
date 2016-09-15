@@ -8,7 +8,7 @@
 FILE* inputfp;
 FILE* outputfp;
 
-void read_p3(){
+char* read_p3(){
   printf("Args: %d\n", inputfp);
   char* str;
   char* data;
@@ -52,9 +52,10 @@ void read_p3(){
       data[i+endOfHeader] = a;
   }
 
-
+  data[i+endOfHeader-1] = '\0';
   printf("\nBuffer:\n%s-------------\n", data);
 
+  return data;
 }
 
 
@@ -81,17 +82,22 @@ int main(int argc, char* argv[]){
 
   if(argc == 4){
     inputfp = fopen(argv[2], "r");
-    outputfp = fopen(argv[3], "w");
     if (inputfp == 0)
       fprintf(stderr, "Error: Input file \"%s\" could not be opened.\n", argv[2], 003);
+
+
+    char* dataToWrite;
+    dataToWrite = read_p3();
+
+    outputfp = fopen(argv[3], "w");
+
     if (outputfp == 0)
       fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", 004, argv[3]);
 
-    read_p3();
+    fprintf(outputfp, "%s", dataToWrite);
 
-
-    fclose(inputfp);
     fclose(outputfp);
+    fclose(inputfp);
   }
   printf("closing...");
   return(0);
