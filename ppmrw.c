@@ -105,12 +105,6 @@ int read_p3(){
 
     image[i*sizeof(Pixel)] = temp;
   }
-
-  for(i = 0; i < width*height; i++){
-    printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
-                               image[i*sizeof(Pixel)].g,
-                               image[i*sizeof(Pixel)].b);
-  }
   return 1;
 }
 
@@ -119,19 +113,108 @@ int write_p3(){
   header[1] = '3';
   fprintf(outputfp, "%s", header);
   int i;
+  //char number[4];
   for(i = 0; i < width*height; i++){
-    fprintf(outputfp, "%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
-                                 image[i*sizeof(Pixel)].g,
-                                 image[i*sizeof(Pixel)].b);
+    printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
+                                              image[i*sizeof(Pixel)].g,
+                                              image[i*sizeof(Pixel)].b);
+    /*sprintf(number, "%d\n", image[i*sizeof(Pixel)].r);
+    fputs(number, outputfp);
+    sprintf(number, "%d\n", image[i*sizeof(Pixel)].g);
+    fputs(number, outputfp);
+    sprintf(number, "%d\n", image[i*sizeof(Pixel)].b);
+    fputs(number, outputfp);*/
   }
   return 1;
 };
 
 int read_p6(){
+  //printf("Fd: %d\n", inputfp);
+  int i, line, endOfHeader, x;
+  char a, b;
+  char number[8];
+  char widthB[32], heightB[32], maxcvB[32];
+  char comment[64];
+
+  a = fgetc(inputfp);
+  b = fgetc(inputfp);
+  header[0] = a;
+  header[1] = b;
+  if(a != 'P' || b !='6'){
+    fprintf(stderr, "Error: Improper header filetype.\n", 006);
+    return 0;
+  }
+
+  a = fgetc(inputfp);
+  header[2] = a;
+
+  a = fgetc(inputfp);
+  if(a == '#'){
+    while(a != '\n'){
+        a = fgetc(inputfp);
+    }
+  }
+
+  a = fgetc(inputfp);
+  i = 0;
+  while(a != ' '){
+    widthB[i] = a;
+    a = fgetc(inputfp);
+    i++;
+  }
+  width = atoi(widthB);
+  widthB[i] = a;
+  widthB[i+1] = '\0';
+  //printf("width: %d\n", width);
+
+
+  a = fgetc(inputfp);
+  i = 0;
+  while(a != '\n'){
+    heightB[i] = a;
+    a = fgetc(inputfp);
+    i++;
+  }
+  height = atoi(heightB);
+  heightB[i] = a;
+  heightB[i+1] = '\0';
+  //printf("height: %d\n", height);
+
+  a = fgetc(inputfp);
+  i = 0;
+  while(a != '\n'){
+    maxcvB[i] = a;
+    a = fgetc(inputfp);
+    i++;
+  }
+  maxcv = atoi(maxcvB);
+  maxcvB[i] = a;
+  maxcvB[i+1] = '\0';
+  //printf("maxcv: %d\n", maxcv);
+
+  strcat(header, widthB);
+  strcat(header, heightB);
+  strcat(header, maxcvB);
+
+  int c;
+  image = malloc(sizeof(Pixel)*width*height);
+  for(i=0; i < width*height ; i++){
+    Pixel temp;
+    c = fgetc(inputfp);
+    temp.r = c;
+    c = fgetc(inputfp);
+    temp.g = c;
+    c = fgetc(inputfp);
+    temp.b = c;
+    //printf("%3d: %d %d %d\n", i, temp.r, temp.g, temp.b);
+
+    image[i*sizeof(Pixel)] = temp;
+  }
+
+  return 1;
 };
 
 int write_p6(){
-
   return 1;
 
 };
@@ -160,14 +243,13 @@ int main(int argc, char* argv[]){
           fprintf(stderr, "Error: Input file \"%s\" could not be opened.\n", argv[2], 003);
           exit(1);
         }
-        outputfp = fopen(argv[3], "w");
+        outputfp = fopen(argv[3], "w+");
         if (outputfp == 0){
           fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
           exit(1);
         }
-
-                read_p3();
-                write_p6();
+        read_p3();
+        write_p6();
       }
       else{
         inputfp = fopen(argv[2], "rb");
