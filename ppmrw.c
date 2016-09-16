@@ -92,7 +92,6 @@ int read_p3(){
 
   image = malloc(sizeof(Pixel)*width*height);
   for(i=0; i < width*height ; i++){
-    //a = fgetc(inputfp);
     Pixel temp;
 
     fgets(number, 5, inputfp);
@@ -226,15 +225,6 @@ int write_p6(){
     fwrite(number , 1 , 1 , outputfp );
     sprintf(number, "%c\n", image[i*sizeof(Pixel)].b);
     fwrite(number , 1 , 1 , outputfp );
-    //printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
-                                            //image[i*sizeof(Pixel)].g,
-                                             // image[i*sizeof(Pixel)].b);
-    /*
-    fputs(number, outputfp);
-    sprintf(number, "%d\n", image[i*sizeof(Pixel)].g);
-    fputs(number, outputfp);
-    sprintf(number, "%d\n", image[i*sizeof(Pixel)].b);
-    fputs(number, outputfp);*/
   }
   return 1;
 };
