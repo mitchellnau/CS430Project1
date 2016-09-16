@@ -20,6 +20,65 @@ int write_p3();
 int write_p6();
 int read_p6();
 
+
+int read_header(char input){
+  //printf("Fd: %d\n", inputfp);
+  int i, line, endOfHeader, x;
+  char a, b;
+  char widthB[32], heightB[32], maxcvB[32];
+  char comment[64];
+
+  a = fgetc(inputfp);
+  b = fgetc(inputfp);
+  if(a != 'P' || b != input){
+    fprintf(stderr, "Error: Improper header filetype.\n", 005);
+    exit(1);
+  }
+  a = fgetc(inputfp); //move past whitespace
+
+  a = fgetc(inputfp);
+  if(a == '#'){       //move past comment
+    while(a != '\n'){
+        a = fgetc(inputfp);
+    }
+  }
+
+
+  a = fgetc(inputfp);
+  i = 0;
+  while(a != ' '){
+    widthB[i] = a;
+    a = fgetc(inputfp);
+    i++;
+  }
+  width = atoi(widthB);
+  widthB[i] = a;
+  widthB[i+1] = '\0';
+
+
+  a = fgetc(inputfp);
+  i = 0;
+  while(a != '\n'){
+    heightB[i] = a;
+    a = fgetc(inputfp);
+    i++;
+  }
+  height = atoi(heightB);
+  heightB[i] = a;
+  heightB[i+1] = '\0';
+
+  a = fgetc(inputfp);
+  i = 0;
+  while(a != '\n'){
+    maxcvB[i] = a;
+    a = fgetc(inputfp);
+    i++;
+  }
+  maxcv = atoi(maxcvB);
+
+  return 1;
+}
+
 int read_p3(){
   //printf("Fd: %d\n", inputfp);
   int i, line, endOfHeader, x;
