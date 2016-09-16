@@ -215,8 +215,28 @@ int read_p6(){
 };
 
 int write_p6(){
+  header[1] = '6';
+  fprintf(outputfp, "%s", header);
+  int i;
+  char number[4];
+  for(i = 0; i < width*height; i++){
+    sprintf(number, "%c\n", image[i*sizeof(Pixel)].r);
+    fwrite(number , 1 , 1 , outputfp );
+    sprintf(number, "%c\n", image[i*sizeof(Pixel)].g);
+    fwrite(number , 1 , 1 , outputfp );
+    sprintf(number, "%c\n", image[i*sizeof(Pixel)].b);
+    fwrite(number , 1 , 1 , outputfp );
+    //printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
+                                            //image[i*sizeof(Pixel)].g,
+                                             // image[i*sizeof(Pixel)].b);
+    /*
+    fputs(number, outputfp);
+    sprintf(number, "%d\n", image[i*sizeof(Pixel)].g);
+    fputs(number, outputfp);
+    sprintf(number, "%d\n", image[i*sizeof(Pixel)].b);
+    fputs(number, outputfp);*/
+  }
   return 1;
-
 };
 
 
