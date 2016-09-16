@@ -114,7 +114,11 @@ int write_p3(){
   int i;
   //char number[4];
   for(i = 0; i < width*height; i++){
-    printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
+    //printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
+    //                                          image[i*sizeof(Pixel)].g,
+    //                                          image[i*sizeof(Pixel)].b);
+
+    fprintf(outputfp, "%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
                                               image[i*sizeof(Pixel)].g,
                                               image[i*sizeof(Pixel)].b);
     /*sprintf(number, "%d\n", image[i*sizeof(Pixel)].r);
@@ -214,16 +218,19 @@ int read_p6(){
 };
 
 int write_p6(){
-  header[1] = '6';
-  fprintf(outputfp, "%s", header);
+  //header[1] = '6';
+  //fprintf(outputfp, "%s", header);
+  fprintf(outputfp, "%c%c\n", 'P', '6');
+  fprintf(outputfp, "%d %d\n", width, height);
+  fprintf(outputfp, "%d\n", maxcv);
   int i;
   char number[4];
   for(i = 0; i < width*height; i++){
-    sprintf(number, "%c\n", image[i*sizeof(Pixel)].r);
+    sprintf(number, "%c\0", image[i*sizeof(Pixel)].r);
     fwrite(number , 1 , 1 , outputfp );
-    sprintf(number, "%c\n", image[i*sizeof(Pixel)].g);
+    sprintf(number, "%c\0", image[i*sizeof(Pixel)].g);
     fwrite(number , 1 , 1 , outputfp );
-    sprintf(number, "%c\n", image[i*sizeof(Pixel)].b);
+    sprintf(number, "%c\0", image[i*sizeof(Pixel)].b);
     fwrite(number , 1 , 1 , outputfp );
   }
   return 1;
@@ -253,12 +260,18 @@ int main(int argc, char* argv[]){
           fprintf(stderr, "Error: Input file \"%s\" could not be opened.\n", argv[2], 003);
           exit(1);
         }
-        outputfp = fopen(argv[3], "w+");
+        outputfp = fopen(argv[3], "wb");
         if (outputfp == 0){
           fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
           exit(1);
         }
         read_p3();
+        int i;
+        for(i = 0; i < width*height; i++){
+          printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
+                                              image[i*sizeof(Pixel)].g,
+                                              image[i*sizeof(Pixel)].b);
+          }
         write_p6();
       }
       else{
