@@ -158,21 +158,17 @@ int read_p6(Pixel* image){
   return 1;
 };
 
-int write_p6(){
-  //header[1] = '6';
-  //fprintf(outputfp, "%s", header);
+int write_p6(Pixel* image){
   fprintf(outputfp, "%c%c\n", 'P', '6');
   fprintf(outputfp, "%d %d\n", width, height);
   fprintf(outputfp, "%d\n", maxcv);
   int i;
   char number[4];
   for(i = 0; i < width*height; i++){
-    sprintf(number, "%c\0", image[i*sizeof(Pixel)].r);
-    fwrite(number , 1 , 1 , outputfp );
-    sprintf(number, "%c\0", image[i*sizeof(Pixel)].g);
-    fwrite(number , 1 , 1 , outputfp );
-    sprintf(number, "%c\0", image[i*sizeof(Pixel)].b);
-    fwrite(number , 1 , 1 , outputfp );
+    printf("%d test\n", i);
+    fputc((*(image+i*sizeof(Pixel))).r, outputfp);
+    fputc((*(image+i*sizeof(Pixel))).g, outputfp);
+    fputc((*(image+i*sizeof(Pixel))).b, outputfp);
   }
   return 1;
 };
@@ -210,7 +206,7 @@ int main(int argc, char* argv[]){
         Pixel* data = malloc(sizeof(Pixel)*width*height*3);
 
         read_p3(&data[0]);
-        write_p6();
+        write_p6(&data[0]);
       }
       else{
         inputfp = fopen(argv[2], "rb");
