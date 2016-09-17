@@ -65,6 +65,10 @@ int read_header(char input){ //take in the p type (3 or 6) as a char
     i++;
   }
   maxcv = atoi(maxcvB); //convert the buffer to an integer and store it
+  if(maxcv != 255){          //check to see if the max color value is not 8 bits per channel
+    fprintf(stderr, "Error: Color value exceeds limit.\n", 007);
+    exit(1);              //exit the program if there isn't 8 bits per channel
+  }
 
   return 1;
 }
