@@ -112,25 +112,15 @@ int read_p3(Pixel* image){
 }
 
 
-int write_p3(){
-  header[1] = '3';
-  fprintf(outputfp, "%s", header);
+int write_p3(Pixel* image){
+  fprintf(outputfp, "%c%c\n", 'P', '3');
+  fprintf(outputfp, "%d %d\n", width, height);
+  fprintf(outputfp, "%d\n", maxcv);
   int i;
-  //char number[4];
   for(i = 0; i < width*height; i++){
-    //printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
-    //                                          image[i*sizeof(Pixel)].g,
-    //                                          image[i*sizeof(Pixel)].b);
-
-    fprintf(outputfp, "%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
-                                              image[i*sizeof(Pixel)].g,
-                                              image[i*sizeof(Pixel)].b);
-    /*sprintf(number, "%d\n", image[i*sizeof(Pixel)].r);
-    fputs(number, outputfp);
-    sprintf(number, "%d\n", image[i*sizeof(Pixel)].g);
-    fputs(number, outputfp);
-    sprintf(number, "%d\n", image[i*sizeof(Pixel)].b);
-    fputs(number, outputfp);*/
+    fprintf(outputfp, "%d\n%d\n%d\n", image[i*sizeof(Pixel)].r,
+                                    image[i*sizeof(Pixel)].g,
+                                    image[i*sizeof(Pixel)].b);
   }
   return 1;
 };
@@ -223,7 +213,7 @@ int main(int argc, char* argv[]){
         Pixel* data = malloc(sizeof(Pixel)*width*height*3);
 
         read_p6();
-        write_p3();
+        write_p3(&data[0]);
       }
     }
     else {
