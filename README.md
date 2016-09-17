@@ -2,6 +2,7 @@ This program was made by Mitchell Hewitt for CS430 Computer Graphics (Section 1)
 This program reads in either p3 or p6 image files and writes the data into the opposite filetype.
 
 To use this program...
+
 	1.  Compile it with the provided makefile (requires gcc).
 
 	2a. Use the command "ppmrw 3 inputp3.ppm output.ppm" to read a p3 input image file
@@ -11,6 +12,7 @@ To use this program...
 	    and write it to a p3 output.ppm image file.
 
 If you would like to verify the conversion...
+
 	1.  Open the input file using a program that can read .ppm P3 and P6 file types.
 
 	2.  Verify the filetype by opening the input file in a text editor.
@@ -24,6 +26,5 @@ If you would like to verify the conversion...
 		> A P3 file in a text editor will display all ascii.
 		> A P6 file in a text editor will display a header in ascii followed by nonsensical characters.
 
-Invalid inputs will close the program.
-Invalid file contents close the program.
+Invalid inputs and file contents will close the program. 
 This program is designed to use eight bits per color channel.
