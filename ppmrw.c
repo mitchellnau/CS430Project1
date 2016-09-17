@@ -125,20 +125,34 @@ int write_p3(Pixel* image){
   return 1;
 };
 
-int read_p6(){
+int read_p6(Pixel* image){
   int i, c;
   char number[8];
   for(i=0; i < width*height ; i++){
     Pixel temp;
-    c = fgetc(inputfp);
-    temp.r = c;
-    c = fgetc(inputfp);
-    temp.g = c;
-    c = fgetc(inputfp);
-    temp.b = c;
-    //printf("%3d: %d %d %d\n", i, temp.r, temp.g, temp.b);
 
-    image[i*sizeof(Pixel)] = temp;
+    c = fgetc(inputfp);
+    if(c > maxcv){
+      fprintf(stderr, "Error: Color value exceeds limit.\n", 006);
+      exit(1);
+    }
+    temp.r = c;
+
+    c = fgetc(inputfp);
+    if(c > maxcv){
+      fprintf(stderr, "Error: Color value exceeds limit.\n", 006);
+      exit(1);
+    }
+    temp.g = c;
+
+    c = fgetc(inputfp);
+    if(c > maxcv){
+      fprintf(stderr, "Error: Color value exceeds limit.\n", 006);
+      exit(1);
+    }
+    temp.b = c;
+
+    *(image+i*sizeof(Pixel)) = temp;
   }
 
   return 1;
@@ -212,7 +226,7 @@ int main(int argc, char* argv[]){
         read_header('6');
         Pixel* data = malloc(sizeof(Pixel)*width*height*3);
 
-        read_p6();
+        read_p6(&data[0]);
         write_p3(&data[0]);
       }
     }
