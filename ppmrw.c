@@ -12,14 +12,11 @@ typedef struct Pixel {
 
 FILE* inputfp;
 FILE* outputfp;
-char header[64];
-Pixel* image;
 int width, height, maxcv;
 
 int write_p3();
 int write_p6();
 int read_p6();
-
 
 int read_header(char input){
   //printf("Fd: %d\n", inputfp);
@@ -80,76 +77,8 @@ int read_header(char input){
 }
 
 int read_p3(){
-  //printf("Fd: %d\n", inputfp);
-  int i, line, endOfHeader, x;
-  char a, b;
-  char number[4];
-  char widthB[32], heightB[32], maxcvB[32];
-  char comment[64];
-
-  a = fgetc(inputfp);
-  b = fgetc(inputfp);
-  header[0] = a;
-  header[1] = b;
-  if(a != 'P' || b !='3'){
-    fprintf(stderr, "Error: Improper header filetype.\n", 006);
-    return 0;
-  }
-
-  a = fgetc(inputfp);
-  header[2] = a;
-
-  a = fgetc(inputfp);
-  if(a == '#'){
-    while(a != '\n'){
-        a = fgetc(inputfp);
-    }
-  }
-
-  a = fgetc(inputfp);
-  i = 0;
-  while(a != ' '){
-    widthB[i] = a;
-    a = fgetc(inputfp);
-    i++;
-  }
-  width = atoi(widthB);
-  widthB[i] = a;
-  widthB[i+1] = '\0';
-  //printf("width: %d\n", width);
-
-
-  a = fgetc(inputfp);
-  i = 0;
-  while(a != '\n'){
-    heightB[i] = a;
-    a = fgetc(inputfp);
-    i++;
-  }
-  height = atoi(heightB);
-  heightB[i] = a;
-  heightB[i+1] = '\0';
-  //printf("height: %d\n", height);
-
-  a = fgetc(inputfp);
-  i = 0;
-  while(a != '\n'){
-    maxcvB[i] = a;
-    a = fgetc(inputfp);
-    i++;
-  }
-  maxcv = atoi(maxcvB);
-  maxcvB[i] = a;
-  maxcvB[i+1] = '\0';
-  //printf("maxcv: %d\n", maxcv);
-
-  strcat(header, widthB);
-  strcat(header, heightB);
-  strcat(header, maxcvB);
-
-  //printf("%s\n", header);
-
-  image = malloc(sizeof(Pixel)*width*height);
+  int i;
+  char number[5];
   for(i=0; i < width*height ; i++){
     Pixel temp;
 
@@ -191,75 +120,8 @@ int write_p3(){
 };
 
 int read_p6(){
-  //printf("Fd: %d\n", inputfp);
-  int i, line, endOfHeader, x;
-  char a, b;
+  int i, c;
   char number[8];
-  char widthB[32], heightB[32], maxcvB[32];
-  char comment[64];
-
-  a = fgetc(inputfp);
-  b = fgetc(inputfp);
-  header[0] = a;
-  header[1] = b;
-  if(a != 'P' || b !='6'){
-    fprintf(stderr, "Error: Improper header filetype.\n", 006);
-    return 0;
-  }
-
-  a = fgetc(inputfp);
-  header[2] = a;
-
-  a = fgetc(inputfp);
-  if(a == '#'){
-    while(a != '\n'){
-        a = fgetc(inputfp);
-    }
-  }
-
-  a = fgetc(inputfp);
-  i = 0;
-  while(a != ' '){
-    widthB[i] = a;
-    a = fgetc(inputfp);
-    i++;
-  }
-  width = atoi(widthB);
-  widthB[i] = a;
-  widthB[i+1] = '\0';
-  //printf("width: %d\n", width);
-
-
-  a = fgetc(inputfp);
-  i = 0;
-  while(a != '\n'){
-    heightB[i] = a;
-    a = fgetc(inputfp);
-    i++;
-  }
-  height = atoi(heightB);
-  heightB[i] = a;
-  heightB[i+1] = '\0';
-  //printf("height: %d\n", height);
-
-  a = fgetc(inputfp);
-  i = 0;
-  while(a != '\n'){
-    maxcvB[i] = a;
-    a = fgetc(inputfp);
-    i++;
-  }
-  maxcv = atoi(maxcvB);
-  maxcvB[i] = a;
-  maxcvB[i+1] = '\0';
-  //printf("maxcv: %d\n", maxcv);
-
-  strcat(header, widthB);
-  strcat(header, heightB);
-  strcat(header, maxcvB);
-
-  int c;
-  image = malloc(sizeof(Pixel)*width*height);
   for(i=0; i < width*height ; i++){
     Pixel temp;
     c = fgetc(inputfp);
@@ -324,13 +186,10 @@ int main(int argc, char* argv[]){
           fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
           exit(1);
         }
+        read_header('3');
+        Pixel* data = malloc(sizeof(Pixel)*width*height*3);
+
         read_p3();
-        int i;
-        for(i = 0; i < width*height; i++){
-          printf("%3d: %d %d %d\n", i, image[i*sizeof(Pixel)].r,
-                                              image[i*sizeof(Pixel)].g,
-                                              image[i*sizeof(Pixel)].b);
-          }
         write_p6();
       }
       else{
@@ -344,6 +203,9 @@ int main(int argc, char* argv[]){
           fprintf(stderr, "Error: Output file \"%s\" could not be opened.\n", argv[3], 004);
           exit(1);
         }
+        read_header('6');
+        Pixel* data = malloc(sizeof(Pixel)*width*height*3);
+
         read_p6();
         write_p3();
       }
